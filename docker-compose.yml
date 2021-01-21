@@ -4,7 +4,7 @@ volumes:
   dbdata:
 
 networks:
-  application:
+  <application_name>:
 
 services:
 
@@ -13,47 +13,47 @@ services:
     ports:
       - "80:80"
     volumes:
-      - .:/var/www/application/
+      - .:/var/www/<application_name>/
       - ./phpdocker/nginx:/etc/nginx/templates
     environment:
       NGINX_PORT: 80
       NGINX_HOST: "symfony.local"
       DOCKER_PHP: php-fpm
-      APPLICATION_NAME: application
+      APPLICATION_NAME: <application_name>
     depends_on:
       - php-fpm
     links:
       - php-fpm
     networks:
-      application:
+      <application_name>:
         aliases:
           - ssymfony.local
-    container_name: apiproject-webserver
+    container_name: <project_name>-webserver
 
   php-fpm:
     build: phpdocker/php-fpm
-    container_name: apiproject-php-fpm
+    container_name: <project_name>-php-fpm
     user: 1000:1000
     networks:
-      - application
+      - <application_name>
     depends_on:
       - mysql
     links:
       - mysql
     volumes:
-      - ./:/var/www/application/
+      - ./:/var/www/<application_name>/
     environment:
       PHP_IDE_CONFIG: "serverName=Docker"
-      APPLICATION_CONTAINER_NAME: application
+      APPLICATION_CONTAINER_NAME: <application_name>
 
   mysql:
     image: mysql:8.0
-    container_name: apiproject-mysql
+    container_name: <project_name>-mysql
     volumes:
       - dbdata:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: apiproject
+      MYSQL_DATABASE: <project_name>
       MYSQL_USER: root
       MYSQL_PASSWORD: root
     ports:
@@ -61,17 +61,17 @@ services:
 
   mailhog:
     image: mailhog/mailhog:latest
-    container_name: apiproject-mailhog
+    container_name: <project_name>-mailhog
     ports:
       - "8025:8025"
 
 #  redis:
 #    image: redis:alpine
-#    container_name: apiproject-redis
+#    container_name: <project_name>-redis
 #
 #  elasticsearch:
 #    image: elasticsearch:6.5.4
-#    container_name: apiproject-elasticsearch
+#    container_name: <project_name>-elasticsearch
 
 
 

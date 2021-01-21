@@ -1,5 +1,5 @@
 FROM php:7.4-fpm
-WORKDIR /var/www/application
+WORKDIR /var/www/<application_name>
 
 RUN apt-get update && apt-get install -y \
         libfontconfig1 \
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y \
 #    && pecl install mongodb \
 #    && echo "extension=mongodb.so" > $PHP_INI_DIR/conf.d/mongodb.ini
 
-COPY ./php.ini $PHP_INI_DIR/conf.d/application.ini
+COPY ./php.ini $PHP_INI_DIR/conf.d/<application_name>.ini
 COPY ./xdebug.ini $PHP_INI_DIR/conf.d/xdebug.ini
 
 RUN docker-php-ext-install calendar \
@@ -70,8 +70,8 @@ RUN mkdir /var/composer
 ENV COMPOSER_HOME /var/composer
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN mkdir -p /var/www/application
-WORKDIR /var/www/application
+RUN mkdir -p /var/www/<application_name>
+WORKDIR /var/www/<application_name>
 
 ADD ./xdebug.ini $PHP_INI_DIR/conf.d/xdebug.ini
 
