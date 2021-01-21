@@ -1,0 +1,78 @@
+version: "3.1"
+
+volumes:
+  dbdata:
+
+networks:
+  application:
+
+services:
+
+  webserver:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/application/
+      - ./phpdocker/nginx:/etc/nginx/templates
+    environment:
+      NGINX_PORT: 80
+      NGINX_HOST: "symfony.local"
+      DOCKER_PHP: php-fpm
+      APPLICATION_NAME: application
+    depends_on:
+      - php-fpm
+    links:
+      - php-fpm
+    networks:
+      application:
+        aliases:
+          - ssymfony.local
+    container_name: apiproject-webserver
+
+  php-fpm:
+    build: phpdocker/php-fpm
+    container_name: apiproject-php-fpm
+    user: 1000:1000
+    networks:
+      - application
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    volumes:
+      - ./:/var/www/application/
+    environment:
+      PHP_IDE_CONFIG: "serverName=Docker"
+      APPLICATION_CONTAINER_NAME: application
+
+  mysql:
+    image: mysql:8.0
+    container_name: apiproject-mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: apiproject
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3307:3306"
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: apiproject-mailhog
+    ports:
+      - "8025:8025"
+
+#  redis:
+#    image: redis:alpine
+#    container_name: apiproject-redis
+#
+#  elasticsearch:
+#    image: elasticsearch:6.5.4
+#    container_name: apiproject-elasticsearch
+
+
+
+
