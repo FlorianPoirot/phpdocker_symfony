@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
         libzip-dev \
         libxslt-dev \
         git \
+        sudo \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd \
     && pecl install geoip-1.1.1 \
@@ -75,7 +76,12 @@ WORKDIR /var/www/<application_name>
 
 ADD ./xdebug.ini $PHP_INI_DIR/conf.d/xdebug.ini
 
-RUN  wget https://get.symfony.com/cli/installer -O - | bash
+#-----------------------------------
+RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
+
+RUN curl -sS https://get.symfony.com/cli/installer | bash
+RUN mv /root/.symfony/bin/symfony /usr/local/bin/symfony
+#-----------------------------------
 
 RUN curl -LO https://deployer.org/deployer.phar \
     && mv deployer.phar /usr/local/bin/dep \
